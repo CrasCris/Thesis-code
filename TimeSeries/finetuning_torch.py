@@ -310,31 +310,35 @@ class TimesFMFinetuner:
     return avg_loss
 
   def _validate(self, val_loader: DataLoader) -> float:
-    """Perform validation.
+      """Perform validation.
 
-        Args:
-            val_loader: DataLoader for validation data.
+          Args:
+              val_loader: DataLoader for validation data.
 
-        Returns:
-            Average validation loss.
-        """
-    self.model.eval()
-    total_loss = 0.0
-    num_batches = len(val_loader)
+          Returns:
+              Average validation loss.
+      """
+      self.model.eval()
+      total_loss = 0.0
+      num_batches = len(val_loader)
 
-    with torch.no_grad():
-      for batch in val_loader:
-        loss, _ = self._process_batch(batch)
-        total_loss += loss.item()
+      if num_batches == 0:
+          self.logger.warning("Validation DataLoader is empty. Skipping validation.")
+          return float('inf')  # Devuelve un valor alto para indicar que no se pudo validar
 
-    avg_loss = total_loss / num_batches
+      with torch.no_grad():
+          for batch in val_loader:
+              loss, _ = self._process_batch(batch)
+              total_loss += loss.item()
 
-    if self.config.distributed:
-      avg_loss_tensor = torch.tensor(avg_loss, device=self.device)
-      dist.all_reduce(avg_loss_tensor, op=dist.ReduceOp.SUM)
-      avg_loss = (avg_loss_tensor / dist.get_world_size()).item()
+      avg_loss = total_loss / num_batches
 
-    return avg_loss
+      if self.config.distributed:
+          avg_loss_tensor = torch.tensor(avg_loss, device=self.device)
+          dist.all_reduce(avg_loss_tensor, op=dist.ReduceOp.SUM)
+          avg_loss = (avg_loss_tensor / dist.get_world_size()).item()
+
+      return avg_loss
 
   def finetune(self, train_dataset: Dataset,
                val_dataset: Dataset) -> Dict[str, Any]:
