@@ -181,3 +181,5 @@ Test
 data
 TimeSeries/wandb
 LSTM/periodograma.r
+
+resultados/*.csv
