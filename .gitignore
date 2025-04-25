@@ -183,3 +183,4 @@ TimeSeries/wandb
 LSTM/periodograma.r
 
 resultados/*.csv
+resultados_2/*.csv
