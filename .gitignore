@@ -184,3 +184,6 @@ LSTM/periodograma.r
 
 resultados/*.csv
 resultados_2/*.csv
+resultados_3/*.csv
+!loss_plots/
+!loss_plots/*.png
