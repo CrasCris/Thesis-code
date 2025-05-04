@@ -187,3 +187,5 @@ resultados_2/*.csv
 resultados_3/*.csv
 !loss_plots/
 !loss_plots/*.png
+!data/
+!data/serie.csv
